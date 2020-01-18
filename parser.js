@@ -1,7 +1,4 @@
-import { lexer } from './lexer.js'
-
-export const parser = equationString => {
-  const tokens = lexer(equationString)
+export const parser = tokens => {
   const [tree] = parseEquality(tokens, 0)
   return tree
 }
