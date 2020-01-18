@@ -1,14 +1,41 @@
 {
-  "name": "equation-circuit",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
-  "type": "module",
+  "name": "circuit-equation",
+  "browserslist": [
+    "last 2 chrome versions",
+    "last 2 firefox versions",
+    "last 2 edge versions",
+    "last 2 safari versions",
+    "last 2 and_chr versions",
+    "last 2 ios_saf versions",
+    "> 1% in ES",
+    "not ie < 12"
+  ],
   "devDependencies": {
+    "@babel/core": "^7.8.3",
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
+    "@babel/preset-env": "^7.8.3",
+    "@babel/preset-react": "^7.8.3",
+    "babel-loader": "8.0.6",
+    "browserslist": "^4.8.3",
     "eslint": "^6.8.0",
-    "eslint-config-gerard": "^0.7.0"
+    "eslint-config-gerard": "^0.7.0",
+    "html-webpack-plugin": "^3.2.0",
+    "prop-types": "^15.7.2",
+    "webpack": "4.41.5",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.1"
   },
   "dependencies": {
-    "nomnoml": "^0.6.2"
-  }
+    "nomnoml": "^0.6.2",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "styled-components": "^5.0.0"
+  },
+  "scripts": {
+    "clean": "rm -rf dist",
+    "start": "webpack-dev-server --mode development --hot",
+    "build": "npm run clean && webpack --mode production",
+    "lint": "eslint --ext .js,.jsx . --fix"
+  },
+  "license": "UNLICENSED"
 }
