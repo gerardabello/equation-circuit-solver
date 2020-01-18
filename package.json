@@ -1,0 +1,11 @@
+{
+  "name": "equation-circuit",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-gerard": "^0.7.0"
+  }
+}
