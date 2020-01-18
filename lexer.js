@@ -1,4 +1,6 @@
 const isNumberCharacter = char => !!char && !isNaN(parseInt(char, 10))
+const isDot = char => !!char && char === '.'
+const isNumberOrDot = char => isNumberCharacter(char) || isDot(char)
 
 const isLetter = char => !!char && char.match(/[a-z]/i)
 
@@ -10,9 +12,22 @@ export const lexer = equationString => {
     const char = equationString[charIndex]
     if (isNumberCharacter(char)) {
       let currentNumber = 0
-      while (isNumberCharacter(equationString[charIndex])) {
-        currentNumber =
-          currentNumber * 10 + parseInt(equationString[charIndex], 10)
+      let decimalPosition = 0
+      while (isNumberOrDot(equationString[charIndex])) {
+        if (isDot(equationString[charIndex])) {
+          decimalPosition = 1
+        } else {
+          if (decimalPosition > 0) {
+            currentNumber =
+              currentNumber +
+              parseInt(equationString[charIndex], 10) /
+                Math.pow(10, decimalPosition)
+            decimalPosition += 1
+          } else {
+            currentNumber =
+              currentNumber * 10 + parseInt(equationString[charIndex], 10)
+          }
+        }
         charIndex += 1
       }
       charIndex -= 1
