@@ -1,10 +1,12 @@
 import { astToCircuit } from './ast-to-circuit.js'
 import { solveCircuit } from './solve-circuit.js'
 import { parser } from './parser.js'
+import { printTree } from './print-tree.js'
 
 const solve = (equationString, initialVariables) => {
   const ast = parser(equationString)
   // console.log(JSON.stringify(ast, null, 4))
+  console.log(printTree(ast, true))
 
   const [circuit] = astToCircuit(ast)
   // console.log(JSON.stringify(circuit, null, 4))
