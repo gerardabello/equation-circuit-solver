@@ -18,6 +18,19 @@ const Root = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 0 16px;
+`
+
+const Description = styled.h2`
+  text-align: center;
+`
+
+const Note = styled.p`
+  text-align: center;
+`
+
+const A = styled.a`
+  color: inherit;
 `
 
 const Input = styled.input`
@@ -38,7 +51,21 @@ const App = () => {
   return (
     <Root>
       <GlobalStyle />
-      <Spacer size={10} />
+      <Spacer size={4} />
+      <Description>
+        Equation parser and solver using propagation of contraints
+      </Description>
+      <Note>
+        Idea from{' '}
+        <A href="https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book-Z-H-22.html#%_sec_3.3.5">
+          SICP 3.3.5
+        </A>
+      </Note>
+      <Note>
+        Solves equations with an x variable. <br /> The x variable cannot appear
+        more than once for the solver to work.
+      </Note>
+      <Spacer size={4} />
       <Input
         type="text"
         value={equationString}
