@@ -50,7 +50,7 @@ const getOperation = type => {
   }
 }
 
-const updateOperationBox= (state, circuit, box) => {
+const updateOperationBox= (state, circuit, box, onStateChange) => {
   const operation = getOperation(box.type)
 
 
@@ -72,17 +72,17 @@ const updateOperationBox= (state, circuit, box) => {
   // In rules below we can asume only one value is missing
 
   if (val1 == null) {
-    return setConnectorValue(state, circuit, box.connectors[0], operation.backwards1(result,val2))
+    return setConnectorValue(state, circuit, box.connectors[0], operation.backwards1(result,val2),onStateChange)
   } else if (val2 == null) {
-    return setConnectorValue(state, circuit, box.connectors[1], operation.backwards2(result,val1))
+    return setConnectorValue(state, circuit, box.connectors[1], operation.backwards2(result,val1),onStateChange)
   } else if (result == null) {
-    return setConnectorValue(state, circuit, box.connectors[2], operation.forwards(val1, val2))
+    return setConnectorValue(state, circuit, box.connectors[2], operation.forwards(val1, val2),onStateChange)
   }
 
   throw new Error('Should not get here')
 }
 
-const updateBox = (state, circuit, boxId) => {
+const updateBox = (state, circuit, boxId, onStateChange) => {
   const box = circuit.boxes.find(b => b.id === boxId)
 
   switch (box.type) {
@@ -96,7 +96,7 @@ const updateBox = (state, circuit, boxId) => {
     case 'multiplication':
     case 'division':
     case 'substraction':
-      return updateOperationBox(state, circuit, box)
+      return updateOperationBox(state, circuit, box, onStateChange)
   }
   throw new Error('Should not get here')
 }
@@ -106,7 +106,8 @@ const setConnectionValue = (
   circuit,
   connectionId,
   sourceConnectorId,
-  value
+  value,
+  onStateChange
 ) => {
   if (state[connectionId] != null && state[connectionId] !== value) {
     throw new Error(
@@ -115,6 +116,9 @@ const setConnectionValue = (
   }
 
   const newState = { ...state, [connectionId]: value }
+
+  onStateChange(newState)
+
   const connection = circuit.connections.find(c => c.id === connectionId)
   const affectedConnector =
     connection.connector1 === sourceConnectorId
@@ -133,23 +137,24 @@ const setConnectionValue = (
     throw new Error('Could not find affected box')
   }
 
-  return updateBox(newState, circuit, affectedBox.id)
+  return updateBox(newState, circuit, affectedBox.id, onStateChange)
 }
 
-const setConnectorValue = (state, circuit, connectorId, value) => {
+const setConnectorValue = (state, circuit, connectorId, value, onStateChange) => {
   const connection = getConnectionByConnector(circuit, connectorId)
-  return setConnectionValue(state, circuit, connection.id, connectorId, value)
+  return setConnectionValue(state, circuit, connection.id, connectorId, value, onStateChange)
 }
 
-export const solveCircuit = (circuit, initialVariables) => {
+export const solveCircuit = (circuit, initialVariables, onStateChange = () => {}) => {
   // state = {[connectionId]: value}
   let state = {}
+  onStateChange(state)
 
   {
     const constantBoxes = circuit.boxes.filter(b => b.type === 'constant')
     for (const box of constantBoxes) {
       const connectorId = box.connectors[0]
-      state = setConnectorValue(state, circuit, connectorId, box.value)
+      state = setConnectorValue(state, circuit, connectorId, box.value, onStateChange)
     }
   }
   {
@@ -158,7 +163,7 @@ export const solveCircuit = (circuit, initialVariables) => {
       const value = initialVariables[box.name]
       if (value) {
         const connectorId = box.connectors[0]
-        state = setConnectorValue(state, circuit, connectorId, value)
+        state = setConnectorValue(state, circuit, connectorId, value,onStateChange)
       }
     }
   }

@@ -31,22 +31,22 @@ const DivisionToken = () => <Token color={colors.operation}>/</Token>
 const Tokens = ({ tokens }) => {
   return (
     <Root>
-      {tokens.map(token => {
+      {tokens.map((token, i) => {
         switch (token.type) {
           case 'equals':
-            return <EqualsToken token={token} />
+            return <EqualsToken key={i} token={token} />
           case 'constant':
-            return <ConstantToken token={token} />
+            return <ConstantToken key={i} token={token} />
           case 'variable':
-            return <VariableToken token={token} />
+            return <VariableToken key={i} token={token} />
           case 'sum':
-            return <SumToken token={token} />
+            return <SumToken key={i} token={token} />
           case 'division':
-            return <DivisionToken token={token} />
+            return <DivisionToken key={i} token={token} />
           case 'multiplication':
-            return <MultiplicationToken token={token} />
+            return <MultiplicationToken key={i} token={token} />
           case 'substraction':
-            return <SubstractionToken token={token} />
+            return <SubstractionToken key={i} token={token} />
         }
       })}
     </Root>

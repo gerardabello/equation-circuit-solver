@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 
 import { astToCircuit } from './lib/ast-to-circuit.js'
@@ -39,6 +39,8 @@ const Separator = () => (
 )
 
 const Explanation = ({ equationString }) => {
+  const statesRef = useRef([])
+  const [stateIndex, setStateIndex] = useState(0)
   const [state, setState] = useState('initial')
   const [tokens, setTokens] = useState(null)
   const [ast, setAst] = useState(null)
@@ -49,14 +51,21 @@ const Explanation = ({ equationString }) => {
 
   useEffect(() => {
     try {
+      statesRef.current = []
       const t = lexer(equationString)
       const a = parser(t)
       const [c] = astToCircuit(a)
+      const v = solveCircuit(
+        c,
+        initialVariables,
+        state => (statesRef.current = [...statesRef.current, state])
+      )
 
       setTokens(t)
       setAst(a)
       setCircuit(c)
-      setVariables(solveCircuit(c, initialVariables))
+      setVariables(v)
+      setStateIndex(0)
       setState('ok')
     } catch (e) {
       console.error(e)
@@ -78,7 +87,20 @@ const Explanation = ({ equationString }) => {
       </div>
       <Separator />
 
-      <div dangerouslySetInnerHTML={{ __html: printCircuit(circuit) }} />
+      <div
+        dangerouslySetInnerHTML={{
+          __html: printCircuit(circuit, statesRef.current[stateIndex])
+        }}
+      />
+      <input
+        type="range"
+        min="0"
+        value={stateIndex}
+        max={statesRef.current.length - 1}
+        step="1"
+        onChange={e => setStateIndex(e.target.value)}
+      />
+
       <Separator />
       <p>x = {variables.x}</p>
       <Spacer size={4} />

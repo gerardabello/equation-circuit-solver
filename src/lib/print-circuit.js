@@ -12,7 +12,7 @@ const serializeBox = box => {
   return `[<${box.type}>${box.id}|${box.type}]`
 }
 
-const serializeConnection = (circuit, connection) => {
+const serializeConnection = (circuit, connection, state = {}) => {
   const box1 = circuit.boxes.find(b =>
     b.connectors.includes(connection.connector1)
   )
@@ -20,17 +20,25 @@ const serializeConnection = (circuit, connection) => {
     b.connectors.includes(connection.connector2)
   )
 
+  const connectionValue = state[connection.id]
+
+  if (connectionValue) {
+  return `${serializeBox(box1)}-${connectionValue}${serializeBox(box2)}`
+  }
+
   return `${serializeBox(box1)}--${serializeBox(box2)}`
 }
 
-export const printCircuit = circuit => {
+export const printCircuit = (circuit, state) => {
   const connections = circuit.connections
-    .map(c => serializeConnection(circuit, c))
+    .map(c => serializeConnection(circuit, c, state))
     .join('\n')
 
   const src = 
     `
-#font: inherit
+#spacing: 60
+#font: Share Tech Mono
+#edgeMargin: 24
 #stroke: white
 #fill: #00000000
 #lineWidth: 1
@@ -42,7 +50,6 @@ export const printCircuit = circuit => {
 #.multiplication: fill=${colors.operation}
 ${connections}
     `
-  console.log(src)
 
   return nomnoml.renderSvg(
     src
