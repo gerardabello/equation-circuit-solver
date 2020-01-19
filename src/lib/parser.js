@@ -1,6 +1,17 @@
 export const parser = tokens => {
-  const [tree] = parseEquality(tokens, 0)
+  const [tree] = parseEquality(addImplicitMultiplications(tokens), 0)
   return tree
+}
+
+const addImplicitMultiplications = tokens => {
+  let newTokens = [...tokens]
+  const targetTypes = ['constant', 'variable']
+  for (let i = 0; i < newTokens.length - 1; i++) {
+    if(targetTypes.includes(newTokens[i].type) &&  targetTypes.includes(newTokens[i+1].type)){
+      newTokens.splice(i+1, 0, {type: 'multiplication'})
+    }
+  }
+  return newTokens
 }
 
 const checkLeftRight = (left, right, type) => {
