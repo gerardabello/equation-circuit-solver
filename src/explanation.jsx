@@ -40,8 +40,9 @@ const Separator = () => (
 
 const Explanation = ({ equationString }) => {
   const statesRef = useRef([])
+
+  const [statePlayer, setStatePlayer] = useState(true)
   const [stateIndex, setStateIndex] = useState(0)
-  const [state, setState] = useState('initial')
   const [tokens, setTokens] = useState(null)
   const [ast, setAst] = useState(null)
   const [circuit, setCircuit] = useState(null)
@@ -50,59 +51,82 @@ const Explanation = ({ equationString }) => {
   const initialVariables = {}
 
   useEffect(() => {
+    if (statePlayer) {
+      const interval = setInterval(() => {
+        setStateIndex(index => {
+          if (index === statesRef.current.length - 1) {
+            return 0
+          }
+
+          return index + 1
+        })
+      }, 1000)
+      return () => {
+        clearInterval(interval)
+      }
+    }
+  }, [statesRef.current, statePlayer])
+
+  useEffect(() => {
+    statesRef.current = []
+    setTokens(null)
+    setAst(null)
+    setCircuit(null)
+    setStateIndex(0)
+    setVariables(null)
+
     try {
-      statesRef.current = []
       const t = lexer(equationString)
+      setTokens(t)
       const a = parser(t)
-      const [c] = astToCircuit(a)
+      setAst(a)
+      const [c] = astToCircuit(a, true)
+      setCircuit(c)
       const v = solveCircuit(
         c,
         initialVariables,
         state => (statesRef.current = [...statesRef.current, state])
       )
-
-      setTokens(t)
-      setAst(a)
-      setCircuit(c)
       setVariables(v)
-      setStateIndex(0)
-      setState('ok')
     } catch (e) {
-      console.error(e)
-      setState('error')
     }
   }, [equationString])
-
-  if (state === 'initial') return null
-  if (state === 'error') return <div>Could not parse</div>
-  if (variables.x == null) return <div>Could not solve</div>
 
   return (
     <Root>
       <Separator />
-      <Tokens tokens={tokens} />
-      <Separator />
-      <div>
-        <Pre>{printTree(ast, true)}</Pre>
-      </div>
-      <Separator />
-
-      <div
-        dangerouslySetInnerHTML={{
-          __html: printCircuit(circuit, statesRef.current[stateIndex])
-        }}
-      />
-      <input
-        type="range"
-        min="0"
-        value={stateIndex}
-        max={statesRef.current.length - 1}
-        step="1"
-        onChange={e => setStateIndex(e.target.value)}
-      />
+      {tokens && tokens.length > 0 ? (
+        <Tokens tokens={tokens} />
+      ) : (
+        <div>Could not perform lexical analysis</div>
+      )}
 
       <Separator />
-      <p>x = {variables.x}</p>
+      {ast ? (
+        <div>
+          <Pre>{printTree(ast, true)}</Pre>
+        </div>
+      ) : (
+        <div>Could not parse tokens into AST</div>
+      )}
+      <Separator />
+
+      {circuit && circuit.connections.length > 0 ? (
+        <div
+          dangerouslySetInnerHTML={{
+            __html: printCircuit(circuit, statesRef.current[stateIndex])
+          }}
+        />
+      ) : (
+        <div>Could not generate circuit from AST</div>
+      )}
+
+      <Separator />
+      {variables && variables.x ? (
+        <p>x = {variables.x}</p>
+      ) : (
+        <div>Could not find solution for x</div>
+      )}
       <Spacer size={4} />
     </Root>
   )

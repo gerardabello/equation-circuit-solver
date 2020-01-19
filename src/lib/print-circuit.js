@@ -1,9 +1,11 @@
 import nomnoml from 'nomnoml'
 import { colors } from '../constants'
 
+const round = num => Math.round(num * 100) / 100
+
 const serializeBox = box => {
   if (box.type === 'constant') {
-  return `[<${box.type}>${box.id}|${box.value}]`
+  return `[<${box.type}>${box.id}|${round(box.value)}]`
   }
 
   if (box.type === 'variable') {
@@ -23,7 +25,7 @@ const serializeConnection = (circuit, connection, state = {}) => {
   const connectionValue = state[connection.id]
 
   if (connectionValue) {
-  return `${serializeBox(box1)}-${connectionValue}${serializeBox(box2)}`
+  return `${serializeBox(box1)}- ${round(connectionValue)}${serializeBox(box2)}`
   }
 
   return `${serializeBox(box1)}--${serializeBox(box2)}`
@@ -36,7 +38,7 @@ export const printCircuit = (circuit, state) => {
 
   const src = 
     `
-#spacing: 60
+#spacing: 28
 #font: Share Tech Mono
 #edgeMargin: 24
 #stroke: white

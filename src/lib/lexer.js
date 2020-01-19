@@ -5,6 +5,7 @@ const isNumberOrDot = char => isNumberCharacter(char) || isDot(char)
 const isLetter = char => !!char && char.match(/[a-z]/i)
 
 export const lexer = equationString => {
+  equationString = equationString.replace(/\s/g, "")
   let tokens = []
   let charIndex = 0
 
@@ -48,12 +49,10 @@ export const lexer = equationString => {
       tokens = [...tokens, { type: 'multiplication' }]
     } else if (char === '/') {
       tokens = [...tokens, { type: 'division' }]
-    } else if (char === '(') {
-      tokens = [...tokens, { type: 'start-block' }]
-    } else if (char === ')') {
-      tokens = [...tokens, { type: 'end-block' }]
     } else if (char === '=') {
       tokens = [...tokens, { type: 'equals' }]
+    }else{
+      throw new Error('Unknown token')
     }
 
     charIndex += 1

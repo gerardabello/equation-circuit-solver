@@ -45,7 +45,11 @@ const mergeCircuits = (circuit1, circuit2) => ({
   connections: [...circuit1.connections, ...circuit2.connections]
 })
 
-export const astToCircuit = ast => {
+export const astToCircuit = (ast, isFirst=false) => {
+  if (isFirst && ast.type!=='equals') {
+    throw new Error('Expecting equation, recieved operation')
+  }
+
   switch (ast.type) {
     case 'equals': {
       const [circuit1, looseConnector1] = astToCircuit(ast.children[0])

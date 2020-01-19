@@ -3,6 +3,8 @@ import styled from 'styled-components'
 
 import { colors } from './constants'
 
+const round = num => Math.round(num * 100) / 100
+
 const Root = styled.div`
   display: flex;
 `
@@ -18,7 +20,7 @@ const VariableToken = ({ token }) => (
 )
 
 const ConstantToken = ({ token }) => (
-  <Token color={colors.constant}>{token.value}</Token>
+  <Token color={colors.constant}>{round(token.value)}</Token>
 )
 
 const EqualsToken = () => <Token color={colors.equals}>=</Token>
