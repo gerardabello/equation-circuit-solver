@@ -10,7 +10,27 @@ const GlobalStyle = createGlobalStyle`
   }
 `
 
-const Root = styled.div``
+const Spacer = styled.div`
+  height: ${props => props.size * 8}px;
+`
+
+const Root = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`
+
+const Input = styled.input`
+  background: #212121;
+  border: 1px solid #5a5a5a;
+
+  color: white;
+  padding: 4px 8px;
+  font-size: 28px;
+  font-family: inherit;
+  outline: none;
+  text-align: center;
+`
 
 const App = () => {
   const [equationString, setEquationString] = useState('10/x=5')
@@ -18,7 +38,8 @@ const App = () => {
   return (
     <Root>
       <GlobalStyle />
-      <input
+      <Spacer size={10} />
+      <Input
         type="text"
         value={equationString}
         onChange={e => setEquationString(e.target.value)}

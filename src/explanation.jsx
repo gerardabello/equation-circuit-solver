@@ -8,7 +8,35 @@ import { parser } from './lib/parser.js'
 import { printTree } from './lib/print-tree.js'
 import { printCircuit } from './lib/print-circuit.js'
 
-const Root = styled.div``
+import Tokens from './tokens'
+
+const Pre = styled.pre`
+  font-family: inherit;
+  margin: 0;
+`
+
+const Root = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`
+
+const Spacer = styled.div`
+  height: ${props => props.size * 8}px;
+`
+
+const Arrow = styled.div`
+  font-size: 32px;
+  color: #353535;
+`
+
+const Separator = () => (
+  <React.Fragment>
+    <Spacer size={4} />
+    <Arrow>🡫</Arrow>
+    <Spacer size={4} />
+  </React.Fragment>
+)
 
 const Explanation = ({ equationString }) => {
   const [state, setState] = useState('initial')
@@ -42,13 +70,18 @@ const Explanation = ({ equationString }) => {
 
   return (
     <Root>
-      <div>{JSON.stringify(tokens)}</div>
+      <Separator />
+      <Tokens tokens={tokens} />
+      <Separator />
       <div>
-        <pre>{printTree(ast, true)}</pre>
+        <Pre>{printTree(ast, true)}</Pre>
       </div>
+      <Separator />
 
       <div dangerouslySetInnerHTML={{ __html: printCircuit(circuit) }} />
+      <Separator />
       <p>x = {variables.x}</p>
+      <Spacer size={4} />
     </Root>
   )
 }
