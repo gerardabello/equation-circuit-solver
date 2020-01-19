@@ -8,43 +8,59 @@ const getConnectorValue = (state, circuit, connectorId) => {
   return state[connection.id]
 }
 
-const updateMultiplicationBox = (state, circuit, box) => {
-  const val1 = getConnectorValue(state, circuit, box.connectors[0])
-  const val2 = getConnectorValue(state, circuit, box.connectors[1])
-  const result = getConnectorValue(state, circuit, box.connectors[2])
-
-  if (val1 != null && val2 != null && result != null) {
-    if (result !== val1 * val2) {
-      throw new Error('Multiplication not met')
-    }
-    return state
-  } else if ([val1, val2, result].filter(v => v == null).length > 1) {
-    // cannot resolve yet, nothing to do
-    //
-    return state
-  }
-
-  // In rules below we can asume only one value is missing
-
-  if (val1 == null) {
-    return setConnectorValue(state, circuit, box.connectors[0], result / val2)
-  } else if (val2 == null) {
-    return setConnectorValue(state, circuit, box.connectors[1], result / val1)
-  } else if (result == null) {
-    return setConnectorValue(state, circuit, box.connectors[2], val1 * val2)
-  }
-
-  throw new Error('Should not get here')
+const multiplicationOperation = {
+  forwards: (a,b) => a * b,
+  backwards1: (a,b) => a / b,
+  backwards2: (a,b) => a / b,
 }
 
-const updateSumBox = (state, circuit, box) => {
+const sumOperation = {
+  forwards: (a,b) => a + b,
+  backwards1: (a,b) => a - b,
+  backwards2: (a,b) => a - b,
+}
+
+const substractionOperation = {
+  forwards: (a,b) => a - b,
+  backwards1: (a,b) => a + b,
+  backwards2: (a,b) => b - a,
+}
+
+const divisionOperation = {
+  forwards: (a,b) => a / b,
+  backwards1: (a,b) => a * b,
+  backwards2: (a,b) => b / a,
+}
+
+const getOperation = type => {
+  if (type === 'sum') {
+    return sumOperation
+  }
+
+  if (type === 'substraction') {
+    return substractionOperation
+  }
+
+  if (type === 'multiplication') {
+    return multiplicationOperation
+  }
+
+  if (type === 'division') {
+    return divisionOperation
+  }
+}
+
+const updateOperationBox= (state, circuit, box) => {
+  const operation = getOperation(box.type)
+
+
   const val1 = getConnectorValue(state, circuit, box.connectors[0])
   const val2 = getConnectorValue(state, circuit, box.connectors[1])
   const result = getConnectorValue(state, circuit, box.connectors[2])
 
   if (val1 != null && val2 != null && result != null) {
-    if (result !== val1 + val2) {
-      throw new Error('Sum not met')
+    if (result !== operation.forwards(val1, val2)) {
+      throw new Error(`${box.type} operation not met`)
     }
     return state
   } else if ([val1, val2, result].filter(v => v == null).length > 1) {
@@ -56,11 +72,11 @@ const updateSumBox = (state, circuit, box) => {
   // In rules below we can asume only one value is missing
 
   if (val1 == null) {
-    return setConnectorValue(state, circuit, box.connectors[0], result - val2)
+    return setConnectorValue(state, circuit, box.connectors[0], operation.backwards1(result,val2))
   } else if (val2 == null) {
-    return setConnectorValue(state, circuit, box.connectors[1], result - val1)
+    return setConnectorValue(state, circuit, box.connectors[1], operation.backwards2(result,val1))
   } else if (result == null) {
-    return setConnectorValue(state, circuit, box.connectors[2], val1 + val2)
+    return setConnectorValue(state, circuit, box.connectors[2], operation.forwards(val1, val2))
   }
 
   throw new Error('Should not get here')
@@ -76,11 +92,11 @@ const updateBox = (state, circuit, boxId) => {
     case 'variable':
       // Nothing to do, will fetch value from connection at the end
       return state
-    case 'sum': {
-      return updateSumBox(state, circuit, box)
-    }
+    case 'sum': 
     case 'multiplication':
-      return updateMultiplicationBox(state, circuit, box)
+    case 'division':
+    case 'substraction':
+      return updateOperationBox(state, circuit, box)
   }
   throw new Error('Should not get here')
 }

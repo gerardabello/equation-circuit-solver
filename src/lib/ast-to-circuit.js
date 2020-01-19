@@ -14,14 +14,9 @@ const createConnection = (connector1, connector2) => ({
   connector2
 })
 
-const createSumBox = () => ({
-  type: 'sum',
-  id: ID(),
-  connectors: [ID(), ID(), ID()]
-})
-
-const createMultiplication = () => ({
-  type: 'multiplication',
+// By convention, last one is result and first two are arguments
+const createOperationBox= type => ({
+  type,
   id: ID(),
   connectors: [ID(), ID(), ID()]
 })
@@ -63,44 +58,30 @@ export const astToCircuit = ast => {
 
       return [circuit, null]
     }
-    case 'sum': {
-      const [circuit1, looseConnector1] = astToCircuit(ast.children[0])
-      const [circuit2, looseConnector2] = astToCircuit(ast.children[1])
-      const box = createSumBox()
-      let circuit = mergeCircuits(circuit1, circuit2)
-      circuit = addBoxToCircuit(circuit, box)
+    case 'sum':
+    case 'multiplication':
+    case 'division':
+    case 'substraction':
+      {
+        const type = ast.type
+        const [circuit1, looseConnector1] = astToCircuit(ast.children[0])
+        const [circuit2, looseConnector2] = astToCircuit(ast.children[1])
+        const box = createOperationBox(type)
+        let circuit = mergeCircuits(circuit1, circuit2)
+        circuit = addBoxToCircuit(circuit, box)
 
-      circuit = addConnectionToCircuit(
-        circuit,
-        createConnection(looseConnector1, box.connectors[0])
-      )
+        circuit = addConnectionToCircuit(
+          circuit,
+          createConnection(looseConnector1, box.connectors[0])
+        )
 
-      circuit = addConnectionToCircuit(
-        circuit,
-        createConnection(looseConnector2, box.connectors[1])
-      )
+        circuit = addConnectionToCircuit(
+          circuit,
+          createConnection(looseConnector2, box.connectors[1])
+        )
 
-      return [circuit, box.connectors[2]]
-    }
-    case 'multiplication': {
-      const [circuit1, looseConnector1] = astToCircuit(ast.children[0])
-      const [circuit2, looseConnector2] = astToCircuit(ast.children[1])
-      const box = createMultiplication()
-      let circuit = mergeCircuits(circuit1, circuit2)
-      circuit = addBoxToCircuit(circuit, box)
-
-      circuit = addConnectionToCircuit(
-        circuit,
-        createConnection(looseConnector1, box.connectors[0])
-      )
-
-      circuit = addConnectionToCircuit(
-        circuit,
-        createConnection(looseConnector2, box.connectors[1])
-      )
-
-      return [circuit, box.connectors[2]]
-    }
+        return [circuit, box.connectors[2]]
+      }
     case 'constant': {
       let circuit = { connections: [], boxes: [] }
       const box = createConstantBox(ast.value)

@@ -16,9 +16,9 @@ const parseEquality = (tokens, index) => {
 
 const parseTerm = (tokens, index) => {
   let [left, i] = parseFactor(tokens, index)
-  while (tokens[i] && tokens[i].type === 'sum') {
+  while (tokens[i] && (tokens[i].type === 'sum' || tokens[i].type === 'substraction')) {
     const [right, ni] = parseFactor(tokens, i + 1)
-    left = { type: 'sum', children: [left, right] }
+    left = { type: tokens[i].type, children: [left, right] }
     i = ni
   }
 
@@ -27,9 +27,9 @@ const parseTerm = (tokens, index) => {
 
 const parseFactor = (tokens, index) => {
   let [left, i] = parsePrimary(tokens, index)
-  while (tokens[i] && tokens[i].type === 'multiplication') {
+  while (tokens[i] && (tokens[i].type === 'multiplication' || tokens[i].type === 'division')) {
     const [right, ni] = parsePrimary(tokens, i + 1)
-    left = { type: 'multiplication', children: [left, right] }
+    left = { type: tokens[i].type, children: [left, right] }
     i = ni
   }
 
