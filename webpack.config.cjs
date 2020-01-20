@@ -3,7 +3,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 module.exports = {
   devtool: 'source-map',
   output: {
-    publicPath: '/',
     chunkFilename: '[name]-[chunkhash].js',
     filename: '[hash]-[name]-entry.js'
   },
@@ -28,7 +27,7 @@ module.exports = {
       }
     ]
   },
-  plugins: [new HtmlWebpackPlugin({ template: 'src/index.html', base: './' })],
+  plugins: [new HtmlWebpackPlugin({ template: 'src/index.html' })],
   devServer: {
     disableHostCheck: true,
     compress: true
