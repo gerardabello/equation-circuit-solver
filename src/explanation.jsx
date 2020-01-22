@@ -12,6 +12,7 @@ import Tokens from './tokens'
 
 const Pre = styled.pre`
   font-family: inherit;
+  font-size: 14px;
   margin: 0;
 `
 
@@ -19,6 +20,15 @@ const Root = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+`
+
+const Circuit = styled.div`
+  width: 100%;
+
+  & svg {
+    width: 100%;
+  }
 `
 
 const Spacer = styled.div`
@@ -88,8 +98,7 @@ const Explanation = ({ equationString }) => {
         state => (statesRef.current = [...statesRef.current, state])
       )
       setVariables(v)
-    } catch (e) {
-    }
+    } catch (e) {}
   }, [equationString])
 
   return (
@@ -112,7 +121,7 @@ const Explanation = ({ equationString }) => {
       <Separator />
 
       {circuit && circuit.connections.length > 0 ? (
-        <div
+        <Circuit
           dangerouslySetInnerHTML={{
             __html: printCircuit(circuit, statesRef.current[stateIndex])
           }}

@@ -19,6 +19,7 @@ const Root = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 0 16px;
+  width: 100%;
 `
 
 const Description = styled.h2`

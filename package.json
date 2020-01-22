@@ -34,7 +34,7 @@
   },
   "scripts": {
     "clean": "rm -rf dist",
-    "start": "webpack-dev-server --mode development --hot",
+    "start": "webpack-dev-server --mode development --hot --config webpack.config.cjs",
     "build": "npm run clean && webpack --mode production --config webpack.config.cjs",
     "lint": "eslint --ext .js,.jsx . --fix"
   },
