@@ -36,14 +36,14 @@ const Spacer = styled.div`
 `
 
 const Arrow = styled.div`
-  font-size: 32px;
+  font-size: 40px;
   color: #353535;
 `
 
 const Separator = () => (
   <React.Fragment>
     <Spacer size={4} />
-    <Arrow>🡫</Arrow>
+    <Arrow>↓</Arrow>
     <Spacer size={4} />
   </React.Fragment>
 )
