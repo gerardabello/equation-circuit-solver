@@ -40,10 +40,11 @@ export const printCircuit = (circuit, state) => {
     `
 #spacing: 28
 #font: Share Tech Mono
-#edgeMargin: 24
+#edgeMargin: 8
 #stroke: white
 #fill: #00000000
 #lineWidth: 1
+#direction: right
 #.variable: fill=${colors.variable}
 #.constant: fill=${colors.constant}
 #.sum: fill=${colors.operation}
@@ -55,5 +56,6 @@ ${connections}
 
   return nomnoml.renderSvg(
     src
-  )
+  ).replace(/height="\d*"/,'').replace(/width="\d*"/,'')
+
 }
