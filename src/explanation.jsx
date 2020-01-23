@@ -25,6 +25,7 @@ const Root = styled.div`
 
 const Circuit = styled.div`
   width: 100%;
+  max-width: 500px;
 
   & svg {
     width: 100%;
